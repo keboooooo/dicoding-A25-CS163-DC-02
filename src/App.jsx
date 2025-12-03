@@ -3,8 +3,11 @@ import QuestionCard from "./components/QuestionCard";
 import { LucideRefreshCcw } from "lucide-react";
 
 export default function App() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tutorialIdFromUrl = urlParams.get('tutorial');
+  const userIdFromUrl = urlParams.get('user');
   const pathSegments = window.location.pathname.split("/");
-  const tutorialId = pathSegments[2] || "35363";
+  const tutorialId = tutorialIdFromUrl || pathSegments[2] || "35363";
 
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,8 +21,6 @@ export default function App() {
   });
   
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const userIdFromUrl = urlParams.get('userId');
 
     const fetchPreferences = async (userId) => {
       try {
@@ -35,14 +36,15 @@ export default function App() {
           }
           setPreferences(userPrefs);
         }
-      } catch (error) {
+      } catch {
+        console.warn("Failed to fetch preferences");
       }
     };
 
     if (userIdFromUrl) {
       fetchPreferences(userIdFromUrl);
     }
-  }, [tutorialId]);
+  }, [userIdFromUrl]);
 
   useEffect(() => {
     if (!tutorialId) {
